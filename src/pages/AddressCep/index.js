@@ -52,7 +52,7 @@ const AddressCep = () => {
             onPress={handleSubmit}
             style={{
               ...styles.btnCep,
-              backgroundColor: !loading ? '#0DAB76' : '#000',
+              backgroundColor: !loading ? '#0DAB76' : '#FFFF0',
             }}
           >
             <Text style={styles.textCep}>Salvar</Text>

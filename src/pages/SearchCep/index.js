@@ -23,7 +23,6 @@ const CepSearch = () => {
       const validacep = /^[0-9]{8}$/;
       if (validacep.test(cep)) {
         const { data } = await api.get(`${cep}/json`);
-        // console.log(storage);
         navigation.navigate('Address', data);
       } else {
         Alert.alert(

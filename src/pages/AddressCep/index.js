@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -13,23 +13,62 @@ const AddressCep = () => {
   const routes = useRoute();
   const dataCep = routes.params;
   const [loading, setLoading] = useState(false);
+  const [showButton, setShowButton] = useState(true);
+
+  useEffect(() => {
+    async function checkDataSaved() {
+      const dataSaved = await AsyncStorage.getItem('dataSaved');
+
+      if (dataSaved) {
+        const jsonDataSaved = JSON.parse(dataSaved);
+        const foundCep = jsonDataSaved.find((item) => {
+          return item.cep === dataCep.cep;
+        });
+
+        if (foundCep) {
+          setShowButton(false);
+        }
+      }
+    }
+
+    checkDataSaved();
+  }, [dataCep]);
 
   function handleNavigateBack() {
-    navigation.goBack();
+    navigation.replace('Home');
   }
+
+  const handleRemoveData = useCallback(async () => {
+    const dataSaved = await AsyncStorage.getItem('dataSaved');
+    const jsonDataSaved = JSON.parse(dataSaved);
+
+    const filteredArray = jsonDataSaved.filter((item) => {
+      return item.cep !== dataCep.cep;
+    });
+
+    await AsyncStorage.setItem('dataSaved', JSON.stringify(filteredArray));
+    setShowButton(true);
+  }, [dataCep]);
 
   const handleSubmit = useCallback(async () => {
     setLoading(true);
 
     const dataSaved = await AsyncStorage.getItem('dataSaved');
-    console.log(dataSaved);
+
     if (dataSaved) {
       const jsonDataSaved = JSON.parse(dataSaved);
-      jsonDataSaved.push(dataCep);
-      await AsyncStorage.setItem('dataSaved', JSON.stringify(jsonDataSaved));
+      const foundCep = jsonDataSaved.find((item) => {
+        return item.cep === dataCep.cep;
+      });
+
+      if (!foundCep) {
+        jsonDataSaved.push(dataCep);
+        await AsyncStorage.setItem('dataSaved', JSON.stringify(jsonDataSaved));
+      }
     } else {
       await AsyncStorage.setItem('dataSaved', JSON.stringify([dataCep]));
     }
+    setShowButton(false);
     setLoading(false);
   }, [dataCep]);
 
@@ -47,16 +86,31 @@ const AddressCep = () => {
             <Text>{dataCep.localidade}</Text>
           </View>
 
-          <RectButton
-            enabled={!loading}
-            onPress={handleSubmit}
-            style={{
-              ...styles.btnCep,
-              backgroundColor: !loading ? '#0DAB76' : '#000',
-            }}
-          >
-            <Text style={styles.textCep}>Salvar</Text>
-          </RectButton>
+          {showButton && (
+            <RectButton
+              enabled={!loading}
+              onPress={handleSubmit}
+              style={{
+                ...styles.btnCep,
+                backgroundColor: !loading ? '#0DAB76' : '#000',
+              }}
+            >
+              <Text style={styles.textCep}>Salvar</Text>
+            </RectButton>
+          )}
+
+          {!showButton && (
+            <RectButton
+              enabled={!loading}
+              onPress={handleRemoveData}
+              style={{
+                ...styles.btnCep,
+                backgroundColor: !loading ? '#0DAB76' : '#000',
+              }}
+            >
+              <Text style={styles.textCep}>Remover</Text>
+            </RectButton>
+          )}
         </>
       ) : (
         <View style={styles.error}>
@@ -114,7 +168,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 30,
     backgroundColor: '#0DAB76',
-    // Tranferir para style-components
     color: '#fff',
   },
 });

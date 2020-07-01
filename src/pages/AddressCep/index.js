@@ -3,8 +3,15 @@ import React, { useCallback, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { RectButton } from 'react-native-gesture-handler';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
+import {
+  StyledView,
+  StyledCard,
+  StyledError,
+  StyledTextError,
+  StyledTextCep,
+  StyledBtnCep,
+} from './style';
 
 Icon.loadFont();
 
@@ -73,101 +80,40 @@ const AddressCep = () => {
   }, [dataCep]);
 
   return (
-    <View style={styles.container}>
+    <StyledView>
       <TouchableOpacity onPress={handleNavigateBack}>
         <Icon name="arrow-left" size={25} color="#FFFF" />
       </TouchableOpacity>
       {!dataCep.erro ? (
         <>
-          <View style={styles.card}>
+          <StyledCard>
             <Text>{dataCep.cep}</Text>
             <Text>{dataCep.bairro}</Text>
             <Text>{dataCep.logradouro}</Text>
             <Text>{dataCep.localidade}</Text>
-          </View>
+          </StyledCard>
 
           {showButton && (
-            <RectButton
-              enabled={!loading}
-              onPress={handleSubmit}
-              style={{
-                ...styles.btnCep,
-                backgroundColor: !loading ? '#0DAB76' : '#000',
-              }}
-            >
-              <Text style={styles.textCep}>Salvar</Text>
-            </RectButton>
+            <StyledBtnCep enabled={!loading} onPress={handleSubmit}>
+              <StyledTextCep>Salvar</StyledTextCep>
+            </StyledBtnCep>
           )}
 
           {!showButton && (
-            <RectButton
-              enabled={!loading}
-              onPress={handleRemoveData}
-              style={{
-                ...styles.btnCep,
-                backgroundColor: !loading ? '#0DAB76' : '#000',
-              }}
-            >
-              <Text style={styles.textCep}>Remover</Text>
-            </RectButton>
+            <StyledBtnCep enabled={!loading} onPress={handleRemoveData}>
+              <StyledTextCep>Remover</StyledTextCep>
+            </StyledBtnCep>
           )}
         </>
       ) : (
-        <View style={styles.error}>
-          <Text style={styles.textError}>
+        <StyledError>
+          <StyledTextError>
             Endereço não localizado, tenta novamente!
-          </Text>
-        </View>
+          </StyledTextError>
+        </StyledError>
       )}
-    </View>
+    </StyledView>
   );
 };
 
 export default AddressCep;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 50,
-  },
-  card: {
-    flex: 0.4,
-    marginTop: 10,
-    backgroundColor: '#FFFF',
-    borderRadius: 8,
-    padding: 20,
-  },
-  error: {
-    marginTop: 10,
-    height: 80,
-    justifyContent: 'center',
-    backgroundColor: '#FFFF',
-    borderRadius: 8,
-  },
-  textError: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    color: 'red',
-  },
-
-  textCep: {
-    fontWeight: 'bold',
-    color: '#FFF',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-
-  btnCep: {
-    borderColor: '#7159c1',
-    height: 60,
-    justifyContent: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 10,
-    marginHorizontal: 30,
-    backgroundColor: '#0DAB76',
-    color: '#fff',
-  },
-});

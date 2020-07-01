@@ -3,16 +3,15 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import AsyncStorage from '@react-native-community/async-storage';
-
+import { Alert, FlatList } from 'react-native';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  FlatList,
-} from 'react-native';
+  StyleContainer,
+  StyleText,
+  StyleTextInput,
+  StyleTouchableOpacity,
+  StyleTextBuscar,
+} from './style';
+
 import api from '../../service/api';
 import ListCepItem from '../../components/ListCepItem';
 
@@ -69,18 +68,17 @@ const CepSearch = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        <Text style={styles.inputTitle}>Procure seu endereço</Text>
-        <TextInput
+      <StyleContainer>
+        <StyleText>Procure seu CEP</StyleText>
+        <StyleTextInput
           onChangeText={setCep}
           value={cep}
           keyboardType="numeric"
           placeholder="Digite o CEP"
-          style={styles.input}
         />
-        <TouchableOpacity onPress={handleSubmit} style={styles.btnCep}>
-          <Text style={styles.textCep}>Buscar</Text>
-        </TouchableOpacity>
+        <StyleTouchableOpacity onPress={handleSubmit}>
+          <StyleTextBuscar>Buscar</StyleTextBuscar>
+        </StyleTouchableOpacity>
 
         <FlatList
           data={filteredList}
@@ -94,51 +92,9 @@ const CepSearch = () => {
             />
           )}
         />
-      </View>
+      </StyleContainer>
     </>
   );
 };
 
 export default CepSearch;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-
-  inputTitle: {
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginBottom: 20,
-  },
-  input: {
-    height: 55,
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    marginHorizontal: 30,
-    fontSize: 16,
-  },
-  textCep: {
-    fontWeight: 'bold',
-    color: '#FFF',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-
-  btnCep: {
-    borderColor: '#7159c1',
-    height: 60,
-    marginBottom: 20,
-    justifyContent: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 10,
-    marginHorizontal: 30,
-    backgroundColor: '#0DAB76',
-    color: '#fff',
-  },
-});
